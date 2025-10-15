@@ -1,0 +1,20 @@
+[Initialize_TestLib]
+Class="Function"
+Prototype="int Initialize_TestLib(char errmsg[1024]);"
+SourceLocation="c:\Arxtron\RD25XXX_CICD\Source\TestLib.c:86:1"
+
+[Lib_Fn]
+Class="Function"
+Prototype="int Lib_Fn(const int *a, const long long *b, const float *c, double *d, short *e, char *f, char errmsg[1024]);"
+SourceLocation="c:\Arxtron\RD25XXX_CICD\Source\TestLib.c:120:1"
+
+[Lib_Fn2]
+Class="Function"
+Prototype="int Lib_Fn2(char errmsg[1024]);"
+SourceLocation="c:\Arxtron\RD25XXX_CICD\Source\TestLib.c:135:1"
+
+[GetLibErrMsg]
+Class="Function"
+Prototype="void GetLibErrMsg(int error, char errmsg[1024]);"
+SourceLocation="c:\Arxtron\RD25XXX_CICD\Source\TestLib.c:156:1"
+

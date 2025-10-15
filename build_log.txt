@@ -1,0 +1,13 @@
+Building Release configuration of c:\Arxtron\RD25XXX_CICD\Source\TestLib.prj
+Compiling c:\Arxtron\Libraries\dllmain.c
+Compiling c:\Arxtron\RD25XXX_CICD\Source\TestLib.c
+Compiling c:\Arxtron\RD25XXX_CICD\Source\TestLib_Extended_Documentation.c
+TestLib.c :58:12: warning: unused variable 'glbSysLogLevel' 
+Link TestLib.dll
+"c:\Arxtron\RD25XXX_CICD\Source\TestLib.dll"
+successfully created.
+"c:\Arxtron\RD25XXX_CICD\Source\TestLib.lib"
+successfully created.
+"c:\Arxtron\RD25XXX_CICD\Source\msvc\TestLib.lib"
+successfully created.
+Build succeeded.

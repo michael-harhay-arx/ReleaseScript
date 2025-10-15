@@ -1,0 +1,8 @@
+-inrc c:\Arxtron\RD25XXX_CICD\Source\cvibuild.TestLib\Release\resources.in.rc
+-outrc c:\Arxtron\RD25XXX_CICD\Source\cvibuild.TestLib\Release\resources.out.rc
+-inhdef c:\Arxtron\RD25XXX_CICD\Source\cvibuild.TestLib\Release\TestLib.h.hdefs
+-outdef c:\Arxtron\RD25XXX_CICD\Source\cvibuild.TestLib\Release\TestLib.dll.defs
+-indefprot c:\Arxtron\RD25XXX_CICD\Source\cvibuild.TestLib\Release\dllmain.obj.cvidefprots
+-indefprot c:\Arxtron\RD25XXX_CICD\Source\cvibuild.TestLib\Release\TestLib.obj.cvidefprots
+-indefprot c:\Arxtron\RD25XXX_CICD\Source\cvibuild.TestLib\Release\TestLib_Extended_Documentation.obj.cvidefprots
+-dllName TestLib.dll
