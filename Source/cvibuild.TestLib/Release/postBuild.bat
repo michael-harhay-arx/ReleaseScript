@@ -8,7 +8,7 @@
 @set CVITARGETDIR=c:\Arxtron\RD25XXX_CICD\Source
 @set CVITARGETNAME=TestLib.dll
 @set CVIBUILDCONFIG=Release
-@set CVITARGETFILEVER=2.0.0.1
+@set CVITARGETFILEVER=2.0.0.3
 @set CVITARGETPRODVER=0.0.0.0
 @set CVIVXIPNPDIR=C:\Program Files (x86)\IVI Foundation\VISA\winnt
 @set CVIIVIDIR=C:\Program Files (x86)\IVI Foundation\IVI

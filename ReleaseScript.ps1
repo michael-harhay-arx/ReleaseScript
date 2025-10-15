@@ -18,7 +18,15 @@ $glbDLLTargetFolder = "C:\Arxtron\RD25XXX_CICD\DLLs"
 
 # 1. Set up release branch
 
-# Check if release branch exists, if not create it
+# Get current branch
+$targetBranch = git branch --show-current
+if (-not $targetBranch -or [string]::IsNullOrWhiteSpace($targetBranch))
+{
+    Write-Host "Error: no current branch (you might be in a detached HEAD state)." -ForegroundColor Red
+    exit 1
+}
+
+# Check if release branch exists, if not create it and checkout
 Write-Host "`n==> Checking for release branch..." -ForegroundColor Cyan
 
 if (git rev-parse --verify --quiet release) 
@@ -34,21 +42,18 @@ else
 
 if ($LASTEXITCODE -ne 0)
 {
-    Write-Host "Error - exiting script." -ForegroundColor Red
-    exit 1
+    Write-Host "Error: git repository does not exist" -ForegroundColor Red
+    #exit 1
 }
 
-
-# Merge target branch into release (ask user to input target branch)
-$targetBranch = "develop" # 20251015 Michael: TODO ask for user input
-
+# Merge target branch into release
 Write-Host "`n==> Merging latest changes from $targetBranch into release..." -ForegroundColor Cyan
 #git fetch origin
 #git merge origin/$targetBranch --no-ff
 
 if ($LASTEXITCODE -ne 0)
 {
-    Write-Host "Error merging - exiting script." -ForegroundColor Red
+    Write-Host "Error: unsuccessful merge." -ForegroundColor Red
     exit 1
 }
 
@@ -102,7 +107,7 @@ while ($versionIncremented -ne $true)
         }
         default 
         {
-            Write-Host "Invalid input. No version increment performed." -ForegroundColor Red
+            Write-Host "Invalid input." -ForegroundColor Red
         }
     }
 }
@@ -162,9 +167,9 @@ Write-Host "`n==> Committing to release branch..." -ForegroundColor Cyan
 
 # 5. Run CI/CD, recompile if necessary
 Write-Host "`n==> Running CI/CD tests..." -ForegroundColor Cyan
-[bool]$versionIncremented = $true
+[bool]$buildOk = $true
 
-# Run checks... set $buildOK
+# Run Write-Host "`n==> Running CI/CD tests..." -ForegroundColor Cyan... set $buildOK
 if ($buildOk -eq $true)
 {
     Write-Host "CI/CD passed." -ForegroundColor Green
