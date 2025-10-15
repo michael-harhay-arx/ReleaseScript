@@ -1,0 +1,30 @@
+Release script:
+- Purpose is to allow for quicker/cleaner releases
+- Can run after committing in develop branch
+
+Features
+1. Checkout release branch, merge target branch into release (make release branch if doesn't exist)
+2. Run compile script with questionnaire. Pulls previous DLL version, before asking for info about version update (major/minor revision)
+3. Ask for release notes (point form description of release)
+4. Finish running script to generate DLL (C:\Program Files (x86)\National Instruments\CVI2019 --> compile.exe, can run with /? for help)
+5. Parse output of compile.exe to validate successful compilation
+6. If successful, copy new DLL to dedicated DLL folder
+7. Make a new commit on release branch with new DLL, add release notes to commit message.
+8. Run CI/CD (if implemented), rebuild DLL if necessary
+
+Create pull request here
+
+Second part of script
+9. Checkout master branch, merge to master
+10. Tag commit on master with appropriate version number and release notes
+11. Push to master
+12. Change directory to SourceLibraries, make commit message that says "New release for library version x.x.x.x" (Commit since submodule has new commit)
+13. 
+
+Places to change version number:
+- Target settings
+- Git tag
+- Extended documentation (optional)
+- readme (lesser priority)
+
+reference .gitconfig taglog

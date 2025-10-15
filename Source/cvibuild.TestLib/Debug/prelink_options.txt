@@ -1,0 +1,9 @@
+-inrc c:\Arxtron\RD25XXX_CICD\Source\cvibuild.TestLib\Debug\resources.in.rc
+-outrc c:\Arxtron\RD25XXX_CICD\Source\cvibuild.TestLib\Debug\resources.out.rc
+-inhdef c:\Arxtron\RD25XXX_CICD\Source\cvibuild.TestLib\Debug\TestLib.h.hdefs
+-outdef c:\Arxtron\RD25XXX_CICD\Source\cvibuild.TestLib\Debug\TestLib.dll.defs
+-indefprot c:\Arxtron\RD25XXX_CICD\Source\cvibuild.TestLib\Debug\dllmain.obj.cvidefprots
+-indefprot c:\Arxtron\RD25XXX_CICD\Source\cvibuild.TestLib\Debug\TestLib.obj.cvidefprots
+-indefprot c:\Arxtron\RD25XXX_CICD\Source\cvibuild.TestLib\Debug\TestLib_Extended_Documentation.obj.cvidefprots
+-dllName TestLib.dll
+-addNITypeInfo 

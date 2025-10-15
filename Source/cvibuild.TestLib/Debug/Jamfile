@@ -1,0 +1,74 @@
+CCFLAGS = -g ;
+HDRS = 	"C:\\Users\\Public\\Documents\\National Instruments\\TestStand 2017 (32-bit)\\AdapterSupport\\CVI"
+	"C:\\Program Files (x86)\\National Instruments\\TestStand 2017\\API\\DLLInterfaces"
+	"c:\\Arxtron\\Libraries"
+	"C:\\Program Files (x86)\\National Instruments\\Shared\\CVI\\instr\\TestStand\\API"
+	"c:\\program files (x86)\\national instruments\\cvi2019\\toolslib\\activex\\word"
+	"c:\\program files (x86)\\national instruments\\cvi2019\\toolslib\\activex\\excel"
+	"c:\\program files (x86)\\national instruments\\cvi2019\\toolslib\\custctrl"
+	"c:\\program files (x86)\\national instruments\\cvi2019\\toolslib\\custctrl\\custsupp"
+	"c:\\program files (x86)\\national instruments\\cvi2019\\toolslib\\cvirtsup"
+	"c:\\program files (x86)\\national instruments\\cvi2019\\toolslib\\datasock"
+	"c:\\program files (x86)\\national instruments\\cvi2019\\toolslib\\daqUtil"
+	"c:\\program files (x86)\\national instruments\\cvi2019\\toolslib\\printing"
+	"c:\\program files (x86)\\national instruments\\cvi2019\\toolslib\\toolbox"
+	"c:\\program files (x86)\\national instruments\\cvi2019\\toolslib\\reportgen"
+	"c:\\program files (x86)\\national instruments\\cvi2019\\toolslib\\localui"
+	"c:\\program files (x86)\\national instruments\\cvi2019\\instr"
+	"C:\\Program Files (x86)\\National Instruments\\Shared\\CVI\\toolslib\\custctrl"
+	"C:\\Program Files (x86)\\National Instruments\\Shared\\CVI\\toolslib\\custctrl\\custsupp"
+	"C:\\Program Files (x86)\\National Instruments\\Shared\\CVI\\instr"
+	"C:\\ProgramData\\National Instruments\\CVI2019\\instr"
+	"c:\\program files (x86)\\national instruments\\cvi2019\\include"
+	"C:\\Program Files (x86)\\National Instruments\\Shared\\CVI\\include"
+	"C:\\ProgramData\\National Instruments\\CVI2019\\include"
+	"C:\\ProgramData\\National Instruments\\CVI\\include"
+	"c:\\program files (x86)\\national instruments\\cvi2019\\include\\ansi"
+	"c:\\program files (x86)\\national instruments\\cvi2019\\include\\clang\\3.3"
+	"C:\\Program Files (x86)\\IVI Foundation\\IVI\\Include"
+	"C:\\Program Files (x86)\\IVI Foundation\\VISA\\winnt\\include"
+	"C:\\Program Files (x86)\\National Instruments\\Shared\\MSDTRedistributables\\SDKHeaderFiles\\8.1"
+	"c:\\Program Files (x86)\\National Instruments\\CVI2019\\bin"
+	"c:\\Program Files (x86)\\National Instruments\\Shared\\CVI\\bin"
+	;
+include Jamfile_instr ;
+LOCATE on "dllmain.c" = "c:\\Arxtron\\Libraries" ;
+LOCATE on "main.c" = "c:\\Arxtron\\RD25XXX_CICD\\Source" ;
+LOCATE on "TemplateLIB_Include.h" = "c:\\Arxtron\\RD25XXX_CICD\\Source\\TemplateInclude" ;
+LOCATE on "TestLib.c" = "c:\\Arxtron\\RD25XXX_CICD\\Source" ;
+LOCATE on "TestLib.h" = "c:\\Arxtron\\RD25XXX_CICD\\Source" ;
+LOCATE on "TestLib_Definitions.h" = "c:\\Arxtron\\RD25XXX_CICD\\Source" ;
+LOCATE on "TestLib_Extended_Documentation.c" = "c:\\Arxtron\\RD25XXX_CICD\\Source" ;
+Object "c:\\Arxtron\\RD25XXX_CICD\\Source\\cvibuild.TestLib\\Debug\\dllmain.obj" : "c:\\Arxtron\\Libraries\\dllmain.c" ;
+FILENUM on "c:\\Arxtron\\RD25XXX_CICD\\Source\\cvibuild.TestLib\\Debug\\dllmain.obj" = 1 ;
+DEFPROTS on "c:\\Arxtron\\RD25XXX_CICD\\Source\\cvibuild.TestLib\\Debug\\dllmain.obj" = "c:\\Arxtron\\RD25XXX_CICD\\Source\\cvibuild.TestLib\\Debug\\dllmain.obj.cvidefprots" ;
+OUTFILE on "c:\\Arxtron\\RD25XXX_CICD\\Source\\cvibuild.TestLib\\Debug\\dllmain.obj" = "c:\\Arxtron\\RD25XXX_CICD\\Source\\cvibuild.TestLib\\Debug\\dllmain.obj.out" ;
+PrjObjects += "c:\\Arxtron\\RD25XXX_CICD\\Source\\cvibuild.TestLib\\Debug\\dllmain.obj" ;
+Object "c:\\Arxtron\\RD25XXX_CICD\\Source\\cvibuild.TestLib\\Debug\\TestLib.obj" : "c:\\Arxtron\\RD25XXX_CICD\\Source\\TestLib.c" ;
+FILENUM on "c:\\Arxtron\\RD25XXX_CICD\\Source\\cvibuild.TestLib\\Debug\\TestLib.obj" = 2 ;
+DEFPROTS on "c:\\Arxtron\\RD25XXX_CICD\\Source\\cvibuild.TestLib\\Debug\\TestLib.obj" = "c:\\Arxtron\\RD25XXX_CICD\\Source\\cvibuild.TestLib\\Debug\\TestLib.obj.cvidefprots" ;
+OUTFILE on "c:\\Arxtron\\RD25XXX_CICD\\Source\\cvibuild.TestLib\\Debug\\TestLib.obj" = "c:\\Arxtron\\RD25XXX_CICD\\Source\\cvibuild.TestLib\\Debug\\TestLib.obj.out" ;
+PrjObjects += "c:\\Arxtron\\RD25XXX_CICD\\Source\\cvibuild.TestLib\\Debug\\TestLib.obj" ;
+Object "c:\\Arxtron\\RD25XXX_CICD\\Source\\cvibuild.TestLib\\Debug\\TestLib_Extended_Documentation.obj" : "c:\\Arxtron\\RD25XXX_CICD\\Source\\TestLib_Extended_Documentation.c" ;
+FILENUM on "c:\\Arxtron\\RD25XXX_CICD\\Source\\cvibuild.TestLib\\Debug\\TestLib_Extended_Documentation.obj" = 3 ;
+DEFPROTS on "c:\\Arxtron\\RD25XXX_CICD\\Source\\cvibuild.TestLib\\Debug\\TestLib_Extended_Documentation.obj" = "c:\\Arxtron\\RD25XXX_CICD\\Source\\cvibuild.TestLib\\Debug\\TestLib_Extended_Documentation.obj.cvidefprots" ;
+OUTFILE on "c:\\Arxtron\\RD25XXX_CICD\\Source\\cvibuild.TestLib\\Debug\\TestLib_Extended_Documentation.obj" = "c:\\Arxtron\\RD25XXX_CICD\\Source\\cvibuild.TestLib\\Debug\\TestLib_Extended_Documentation.obj.out" ;
+PrjObjects += "c:\\Arxtron\\RD25XXX_CICD\\Source\\cvibuild.TestLib\\Debug\\TestLib_Extended_Documentation.obj" ;
+Object "c:\\Arxtron\\RD25XXX_CICD\\Source\\cvibuild.TestLib\\Debug\\TestLib.h.hdefs" : "c:\\Arxtron\\RD25XXX_CICD\\Source\\TestLib.h" ;
+FILENUM on "c:\\Arxtron\\RD25XXX_CICD\\Source\\cvibuild.TestLib\\Debug\\TestLib.h.hdefs" = 4 ;
+OUTFILE on "c:\\Arxtron\\RD25XXX_CICD\\Source\\cvibuild.TestLib\\Debug\\TestLib.h.hdefs" = "c:\\Arxtron\\RD25XXX_CICD\\Source\\cvibuild.TestLib\\Debug\\TestLib.h.hdefs.out" ;
+PreLinkInputs += "c:\\Arxtron\\RD25XXX_CICD\\Source\\cvibuild.TestLib\\Debug\\resources.in.rc" ;
+PreLinkInputs += $(PrjObjects) $(InstrObjects) ;
+PreLinkOutputs += "c:\\Arxtron\\RD25XXX_CICD\\Source\\cvibuild.TestLib\\Debug\\resources.out.rc" ;
+PreLinkOutputs += "c:\\Arxtron\\RD25XXX_CICD\\Source\\cvibuild.TestLib\\Debug\\TestLib.dll.defs" ;
+PreLink $(PreLinkOutputs) : $(PreLinkInputs) ;
+Depends "c:\\Arxtron\\RD25XXX_CICD\\Source\\cvibuild.TestLib\\Debug\\TestLib.dll" : "c:\\Arxtron\\RD25XXX_CICD\\Source\\cvibuild.TestLib\\Debug\\TestLib.dll.defs" ;
+Object "c:\\Arxtron\\RD25XXX_CICD\\Source\\cvibuild.TestLib\\Debug\\resources.res" : "c:\\Arxtron\\RD25XXX_CICD\\Source\\cvibuild.TestLib\\Debug\\resources.out.rc" ;
+Depends "c:\\Arxtron\\RD25XXX_CICD\\Source\\cvibuild.TestLib\\Debug\\resources.res" : $(PreLinkOutputs) ;
+Depends "c:\\Arxtron\\RD25XXX_CICD\\Source\\cvibuild.TestLib\\Debug\\resources.res" "c:\\Arxtron\\RD25XXX_CICD\\Source\\cvibuild.TestLib\\Debug\\resources.out.rc" : $(PrjObjects) $(InstrObjects) ;
+Depends "c:\\Arxtron\\RD25XXX_CICD\\Source\\cvibuild.TestLib\\Debug\\resources.res" : "c:\\Arxtron\\RD25XXX_CICD\\Source\\cvibuild.TestLib\\Debug\\manifest.xml" ;
+MainFromObjects "c:\\Arxtron\\RD25XXX_CICD\\Source\\cvibuild.TestLib\\Debug\\TestLib.dll" : $(PrjObjects) $(InstrObjects) ;
+Depends "c:\\Arxtron\\RD25XXX_CICD\\Source\\cvibuild.TestLib\\Debug\\TestLib.dll" : "c:\\Arxtron\\RD25XXX_CICD\\Source\\cvibuild.TestLib\\Debug\\link_options.txt" ;
+Depends "c:\\Arxtron\\RD25XXX_CICD\\Source\\cvibuild.TestLib\\Debug\\TestLib.dll" : "c:\\Arxtron\\RD25XXX_CICD\\Source\\cvibuild.TestLib\\Debug\\dependencies.lnk.in" ;
+Depends "c:\\Arxtron\\RD25XXX_CICD\\Source\\cvibuild.TestLib\\Debug\\TestLib.dll" : "c:\\Arxtron\\RD25XXX_CICD\\Source\\cvibuild.TestLib\\Debug\\resources.res" ;
+Depends all : "c:\\Arxtron\\RD25XXX_CICD\\Source\\cvibuild.TestLib\\Debug\\TestLib.dll" ;
