@@ -17,13 +17,13 @@ $glbDLLTargetFolder = "C:\Arxtron\RD25XXX_CICD\DLLs"
 # ----------------------- Code ------------------------ #
 
 # 1. Set up release branch
-
+<#
 # Get current branch
 $targetBranch = git branch --show-current
-if (-not $targetBranch -or [string]::IsNullOrWhiteSpace($targetBranch))
+if ([string]::IsNullOrWhiteSpace($targetBranch))
 {
     Write-Host "Error: no current branch (you might be in a detached HEAD state)." -ForegroundColor Red
-    exit 1
+     exit 1
 }
 
 # Check if release branch exists, if not create it and checkout
@@ -56,7 +56,7 @@ if ($LASTEXITCODE -ne 0)
     Write-Host "Error: unsuccessful merge." -ForegroundColor Red
     exit 1
 }
-
+#>
 
 
 # 2. Version info / release notes questionnaire
@@ -64,14 +64,26 @@ if ($LASTEXITCODE -ne 0)
 # Get and update version info
 Write-Host "`n==> Checking previous DLL version..." -ForegroundColor Cyan
 
-$versionNum = (Get-Item $glbBuildFilePath).VersionInfo.FileVersionRaw
-Write-Host "Current version: $versionNum"
+$prjFileContent = Get-Content $glbPrjFilePath -Raw
+
+if ($prjFileContent -match 'Numeric File Version\s*=\s*"([\d,]+)"') 
+{
+    $currVersionNum = $Matches[1]
+    Write-Host "Current version: $currVersionNum"
+} 
+else 
+{
+    Write-Host "Error: no project version number found." -ForegroundColor Red
+    #exit 1
+}
+
+$numParts = $currVersionNum -split ','
+[int]$major = $numParts[0]
+[int]$minor = $numParts[1]
+[int]$build = $numParts[2]
+[int]$revision = $numParts[3]
 
 [bool]$versionIncremented = $false
-$major = $versionNum.Major
-$minor = $versionNum.Minor
-$build = $versionNum.Build
-$revision = $versionNum.Revision
 
 while ($versionIncremented -ne $true)
 {
@@ -115,7 +127,10 @@ while ($versionIncremented -ne $true)
 $newVersionNum = "$major,$minor,$build,$revision"
 Write-Host "New version number: $newVersionNum" -ForegroundColor Green
 
+$newContent = $prjFileContent -replace 'Numeric File Version\s*=\s*"\d+,\d+,\d+,\d+"', "Numeric File Version = `"$newVersionNum`"" 
+Set-Content $glbPrjFilePath -Value $newContent -Encoding ASCII
 
+<#
 # Get release notes
 Write-Host "`n==> Enter release notes in Notepad. Save and close to continue..." -ForegroundColor Cyan
 
@@ -183,3 +198,4 @@ else
 Write-Host "`n==> Creating GitHub pull request..." -ForegroundColor Cyan
 
 Write-Host "`nScript execution complete." -ForegroundColor Green
+#>
