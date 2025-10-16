@@ -17,9 +17,10 @@ $glbDLLTargetFolder = "C:\Arxtron\RD25XXX_CICD\DLLs"
 # ----------------------- Code ------------------------ #
 
 # 1. Set up release branch
-<#
+
 # Get current branch
 $targetBranch = git branch --show-current
+$currentBranch = $targetBranch
 if ([string]::IsNullOrWhiteSpace($targetBranch))
 {
     Write-Host "Error: no current branch (you might be in a detached HEAD state)." -ForegroundColor Red
@@ -32,31 +33,41 @@ Write-Host "`n==> Checking for release branch..." -ForegroundColor Cyan
 if (git rev-parse --verify --quiet release) 
 {
     Write-Host "Release branch exists, checking out."
-    #git checkout release
+    git checkout release
 }
 else
 {
     Write-Host "Release branch does not exist locally, creating it."
-    #git checkout -b release
+    git checkout -b release
 }
 
 if ($LASTEXITCODE -ne 0)
 {
     Write-Host "Error: git repository does not exist" -ForegroundColor Red
-    #exit 1
+    exit 1
 }
 
 # Merge target branch into release
 Write-Host "`n==> Merging latest changes from $targetBranch into release..." -ForegroundColor Cyan
-#git fetch origin
-#git merge origin/$targetBranch --no-ff
+
+$confirmBranch = ""
+while ($confirmBranch -ne "n" -and $confirmBranch -ne "y")
+{
+    $confirmBranch = Read-Host "`nCurrently on branch: $targetBranch. Is this the desired branch to create a release from? [y/n]"
+    if ($confirmBranch -eq "n")
+    {
+        $targetBranch = Read-Host "`nPlease enter desired branch name:"
+    }
+}
+
+git fetch origin
+git merge $targetBranch --no-ff
 
 if ($LASTEXITCODE -ne 0)
 {
     Write-Host "Error: unsuccessful merge." -ForegroundColor Red
     exit 1
 }
-#>
 
 
 # 2. Version info / release notes questionnaire
@@ -74,7 +85,7 @@ if ($prjFileContent -match 'Numeric File Version\s*=\s*"([\d,]+)"')
 else 
 {
     Write-Host "Error: no project version number found." -ForegroundColor Red
-    #exit 1
+    exit 1
 }
 
 $numParts = $currVersionNum -split ','
@@ -87,7 +98,7 @@ $numParts = $currVersionNum -split ','
 
 while ($versionIncremented -ne $true)
 {
-    $incrementType = Read-Host "`nVersion increment type? (major / minor / build / revision)"
+    $incrementType = Read-Host "`nVersion increment type? [major / minor / build / revision]"
 
     switch ($incrementType.ToLower())
     {
@@ -130,7 +141,7 @@ Write-Host "New version number: $newVersionNum" -ForegroundColor Green
 $newContent = $prjFileContent -replace 'Numeric File Version\s*=\s*"\d+,\d+,\d+,\d+"', "Numeric File Version = `"$newVersionNum`"" 
 Set-Content $glbPrjFilePath -Value $newContent -Encoding ASCII
 
-<#
+
 # Get release notes
 Write-Host "`n==> Enter release notes in Notepad. Save and close to continue..." -ForegroundColor Cyan
 
@@ -152,7 +163,6 @@ Write-Host $formattedNotes
 
 # 3. Compile
 Write-Host "`n==> Compiling project..." -ForegroundColor Cyan
-#"$glbCompilerPath" /build "$glbPrjFilePath" /fileVersion $newVersionNum /out "$glbLogFilePath"
 & $glbCompilerPath $glbPrjFilePath -fileVersion $newVersionNum -log $glbLogFilePath
 $CompileSuccess = Select-String -Path $glbLogFilePath -Pattern "Build succeeded" -Quiet
 
@@ -165,7 +175,7 @@ if ($CompileSuccess)
 else 
 {
     Write-Host "Compilation failed. Check build_log.txt for details." -ForegroundColor Red
-    #exit 1
+    exit 1
 }
 
 
@@ -175,14 +185,15 @@ Write-Host "`n==> Copying DLL to target folder..." -ForegroundColor Cyan
 Copy-Item -Path $glbBuildFilePath -Destination $glbDLLTargetFolder
 
 Write-Host "`n==> Committing to release branch..." -ForegroundColor Cyan
-#git add -A
-#git commit -m "$formattedNotes" 
+git add -A
+git commit -m "$formattedNotes" 
 
 
 
 # 5. Run CI/CD, recompile if necessary
 Write-Host "`n==> Running CI/CD tests..." -ForegroundColor Cyan
-[bool]$buildOk = $true
+
+[bool]$buildOk = $true # 20251015 Michael: use to simulate CI/CD results, delete later and run actual tests
 
 # Run Write-Host "`n==> Running CI/CD tests..." -ForegroundColor Cyan... set $buildOK
 if ($buildOk -eq $true)
@@ -194,8 +205,10 @@ else
     Write-Host "CI/CD failed." -ForegroundColor Red
 }
 
-# 6. Create pull request
+
+
+# 6. Create pull request, end script
 Write-Host "`n==> Creating GitHub pull request..." -ForegroundColor Cyan
 
+git checkout $currentBranch
 Write-Host "`nScript execution complete." -ForegroundColor Green
-#>
