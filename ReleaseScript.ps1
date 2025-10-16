@@ -2,20 +2,23 @@
 # Copyright: Arxtron Technologies Inc.. All Rights Reserved.
 # Date: 2025/10/15 
 # Description: This script automates release creation and DLL
-# generation for Arxtron CVI projects.
+#              generation for Arxtron CVI projects.
 
 
 # ---------------------- Config ----------------------- #
-$glbBuildFilePath = "C:\Arxtron\RD25XXX_CICD\Source\TestLib.dll"
-$glbPrjFilePath = "C:\Arxtron\RD25XXX_CICD\Source\TestLib.prj"
-$glbLogFilePath = "C:\Arxtron\RD25XXX_CICD\build_log.txt"
+$Root = Split-Path -Parent $MyInvocation.MyCommand.Definition
+
+$glbBuildFilePath = Get-ChildItem -Path $Root -Filter *.dll -File | Select-Object -First 1 -ExpandProperty FullName
+$glbPrjFilePath = Get-ChildItem -Path $Root -Filter *.prj -File | Select-Object -First 1 -ExpandProperty FullName
+$glbLogFilePath = Join-Path $Root "build_log.txt"
+$glbDLLTargetFolder = Join-Path $Root "DLLs"
 
 $glbCompilerPath = "C:\Program Files (x86)\National Instruments\CVI2019\compile.exe"
-$glbDLLTargetFolder = "C:\Arxtron\RD25XXX_CICD\DLLs"
 
 
-# ----------------------- Code ------------------------ #
+# ------------------ Main Execution ------------------- #
 
+<#
 # 1. Set up release branch
 
 # Get current branch
@@ -195,7 +198,6 @@ Write-Host "`n==> Running CI/CD tests..." -ForegroundColor Cyan
 
 [bool]$buildOk = $true # 20251015 Michael: use to simulate CI/CD results, delete later and run actual tests
 
-# Run Write-Host "`n==> Running CI/CD tests..." -ForegroundColor Cyan... set $buildOK
 if ($buildOk -eq $true)
 {
     Write-Host "CI/CD passed." -ForegroundColor Green
@@ -212,3 +214,4 @@ Write-Host "`n==> Creating GitHub pull request..." -ForegroundColor Cyan
 
 git checkout $currentBranch
 Write-Host "`nScript execution complete." -ForegroundColor Green
+#>

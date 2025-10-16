@@ -1,8 +1,0 @@
-[TestLib_CheckVersionCompatibility]
-Class="Function"
-Prototype="int TestLib_CheckVersionCompatibility(const int ExpectedVersionMajor, const int ExpectedVersionMinor, int *VersionMajor, int *VersionMinor);"
-
-[Initialize_TestLib]
-Class="Function"
-Prototype="int Initialize_TestLib(char errmsg[1024]);"
-

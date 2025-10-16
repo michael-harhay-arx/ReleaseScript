@@ -1,5 +1,0 @@
-LIBRARY TestLib
-
-EXPORTS
-Initialize_TestLib
-TestLib_CheckVersionCompatibility
