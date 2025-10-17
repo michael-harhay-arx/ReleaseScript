@@ -26,7 +26,8 @@ $currentBranch = $targetBranch
 if ([string]::IsNullOrWhiteSpace($targetBranch))
 {
     Write-Host "Error: no current branch (you might be in a detached HEAD state)." -ForegroundColor Red
-     exit 1
+    Read-Host "Press Enter to exit..."
+    exit 1
 }
 
 # Check if release branch exists, if not create it and checkout
@@ -46,6 +47,7 @@ else
 if ($LASTEXITCODE -ne 0)
 {
     Write-Host "Error: git repository does not exist" -ForegroundColor Red
+    Read-Host "Press Enter to exit..."
     exit 1
 }
 
@@ -55,10 +57,10 @@ Write-Host "`n==> Merging latest changes from $targetBranch into release..." -Fo
 $confirmBranch = ""
 while ($confirmBranch -ne "n" -and $confirmBranch -ne "y")
 {
-    $confirmBranch = Read-Host "`nCurrently on branch: $targetBranch. Is this the desired branch to create a release from? [y/n]"
+    $confirmBranch = Read-Host "Currently on branch: $targetBranch. Is this the desired branch to create a release from? [y/n]"
     if ($confirmBranch -eq "n")
     {
-        $targetBranch = Read-Host "`nPlease enter desired branch name:"
+        $targetBranch = Read-Host "`nPlease enter desired branch name"
     }
 }
 
@@ -68,6 +70,7 @@ git merge $targetBranch --no-ff
 if ($LASTEXITCODE -ne 0)
 {
     Write-Host "Error: unsuccessful merge." -ForegroundColor Red
+    Read-Host "Press Enter to exit..."
     exit 1
 }
 
@@ -87,6 +90,7 @@ if ($prjFileContent -match 'Numeric File Version\s*=\s*"([\d,]+)"')
 else 
 {
     Write-Host "Error: no project version number found." -ForegroundColor Red
+    Read-Host "Press Enter to exit..."
     exit 1
 }
 
@@ -177,6 +181,7 @@ if ($CompileSuccess)
 else 
 {
     Write-Host "Compilation failed. Check build_log.txt for details." -ForegroundColor Red
+    Read-Host "Press Enter to exit..."
     exit 1
 }
 
@@ -188,7 +193,8 @@ Copy-Item -Path $glbBuildFilePath -Destination $glbDLLTargetFolder
 
 Write-Host "`n==> Committing to release branch..." -ForegroundColor Cyan
 git add -A
-git commit -m "$formattedNotes" 
+git commit -m "$formattedNotes"
+git push origin release 
 
 
 
@@ -213,3 +219,4 @@ Write-Host "`n==> Creating GitHub pull request..." -ForegroundColor Cyan
 
 git checkout $currentBranch
 Write-Host "`nScript execution complete." -ForegroundColor Green
+Read-Host "Press Enter to exit..."

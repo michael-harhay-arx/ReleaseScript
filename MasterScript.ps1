@@ -9,6 +9,8 @@
 $glbCurrentBranch = git branch --show-current
 $glbLibName = Split-Path -Path (Get-Location) -Leaf
 
+$glbPrjFilePath = Get-ChildItem -Path $Root -Filter *.prj -File | Select-Object -First 1 -ExpandProperty FullName
+
 
 # ------------------ Main Execution ------------------- #
 
@@ -19,16 +21,18 @@ git checkout master
 if ($LASTEXITCODE -ne 0)
 {
     Write-Host "Error: was not able to checkout master" -ForegroundColor Red
+    Read-Host "Press Enter to exit..."
     exit 1
 }
 
 Write-Host "`n==> Merging latest changes from release..." -ForegroundColor Cyan
 git fetch origin
-git merge release --no-ff
+git merge release --no-ff -m "$releaseNotes"
 
 if ($LASTEXITCODE -ne 0)
 {
     Write-Host "Error: unsuccessful merge." -ForegroundColor Red
+    Read-Host "Press Enter to exit..."
     exit 1
 }
 
@@ -37,19 +41,37 @@ if ($LASTEXITCODE -ne 0)
 # 2. Tag release, commit and push
 Write-Host "`n==> Committing & pushing to master branch..." -ForegroundColor Cyan
 
-$tagNum = "v" + "1.0.0.0"
+$prjFileContent = Get-Content $glbPrjFilePath -Raw
+if ($prjFileContent -match 'Numeric File Version\s*=\s*"([\d,]+)"') 
+{
+    $versionNum = $Matches[1]
+    Write-Host "Current version: $versionNum"
+} 
+else 
+{
+    Write-Host "Error: no project version number found." -ForegroundColor Red
+    Read-Host "Press Enter to exit..."
+    exit 1
+}
+
+$tagNum = "v" + $versionNum
+$releaseNotes = git log -1 --pretty=%B
+
 git tag $tagNum
-git commit -m "$releaseNotes"
 git push origin master
 
 
 
 # 3. Change directory to SourceLibraries, commit changes
+Write-Host "`n==> Committing change to SourceLibraries..." -ForegroundColor Cyan
+
+cd ..
 cd ..
 $currentDir = Split-Path -Path (Get-Location) -Leaf
 while ($currentDir -ne "SourceLibraries")
 {
-    $srcLibPath = Read-Host "Could not find SourceLibraries. Please enter path:" -ForegroundColor Yellow
+    Write-Host "Could not find SourceLibraries." -ForegroundColor Yellow
+    $srcLibPath = Read-Host "Please enter path:"
 }
 cd srcLibPath
 
@@ -63,3 +85,4 @@ git push origin master
 
 git checkout $currentBranch
 Write-Host "`nScript execution complete." -ForegroundColor Green
+Read-Host "Press Enter to exit..."
