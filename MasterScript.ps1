@@ -14,32 +14,8 @@ $glbPrjFilePath = Get-ChildItem -Path $Root -Filter *.prj -File | Select-Object 
 
 # ------------------ Main Execution ------------------- #
 
-# 1. Checkout master and merge from release
-Write-Host "`n==> Checking out master branch..." -ForegroundColor Cyan
-git checkout master
-
-if ($LASTEXITCODE -ne 0)
-{
-    Write-Host "Error: was not able to checkout master" -ForegroundColor Red
-    Read-Host "Press Enter to exit..."
-    exit 1
-}
-
-Write-Host "`n==> Merging latest changes from release..." -ForegroundColor Cyan
-git fetch origin
-git merge release --no-ff -m "$releaseNotes"
-
-if ($LASTEXITCODE -ne 0)
-{
-    Write-Host "Error: unsuccessful merge." -ForegroundColor Red
-    Read-Host "Press Enter to exit..."
-    exit 1
-}
-
-
-
-# 2. Tag release, commit and push
-Write-Host "`n==> Committing & pushing to master branch..." -ForegroundColor Cyan
+# 1. Get version number and release notes from release branch
+git checkout release
 
 $prjFileContent = Get-Content $glbPrjFilePath -Raw
 if ($prjFileContent -match 'Numeric File Version\s*=\s*"([\d,]+)"') 
@@ -54,15 +30,46 @@ else
     exit 1
 }
 
-$tagNum = "v" + $versionNum
 $releaseNotes = git log -1 --pretty=%B
 
+
+
+# 2. Checkout master and merge from release
+Write-Host "`n==> Checking out master branch..." -ForegroundColor Cyan
+git checkout master
+
+if ($LASTEXITCODE -ne 0)
+{
+    Write-Host "Error: was not able to checkout master" -ForegroundColor Red
+    Read-Host "Press Enter to exit..."
+    exit 1
+}
+
+Write-Host "`n==> Merging latest changes from release..." -ForegroundColor Cyan
+
+
+git fetch origin
+git merge release --no-ff -m "$releaseNotes"
+
+if ($LASTEXITCODE -ne 0)
+{
+    Write-Host "Error: unsuccessful merge." -ForegroundColor Red
+    Read-Host "Press Enter to exit..."
+    exit 1
+}
+
+
+
+# 3. Tag release, commit and push
+Write-Host "`n==> Committing & pushing to master branch..." -ForegroundColor Cyan
+
+$tagNum = "v" + $versionNum
 git tag $tagNum
 git push origin master
 
 
 
-# 3. Change directory to SourceLibraries, commit changes
+# 4. Change directory to SourceLibraries, commit changes
 Write-Host "`n==> Committing change to SourceLibraries..." -ForegroundColor Cyan
 
 cd ..
