@@ -5,7 +5,7 @@
 #              generation for Arxtron CVI projects.
 
 
-# ---------------------- Config ----------------------- #
+# ----------------------- Setup ----------------------- #
 $Root = Split-Path -Parent $MyInvocation.MyCommand.Definition
 
 $glbBuildFilePath = Get-ChildItem -Path $Root -Filter *.dll -File | Select-Object -First 1 -ExpandProperty FullName
@@ -18,7 +18,6 @@ $glbCompilerPath = "C:\Program Files (x86)\National Instruments\CVI2019\compile.
 
 # ------------------ Main Execution ------------------- #
 
-<#
 # 1. Set up release branch
 
 # Get current branch
@@ -214,4 +213,3 @@ Write-Host "`n==> Creating GitHub pull request..." -ForegroundColor Cyan
 
 git checkout $currentBranch
 Write-Host "`nScript execution complete." -ForegroundColor Green
-#>
