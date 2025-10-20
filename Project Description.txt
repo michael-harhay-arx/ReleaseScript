@@ -28,3 +28,9 @@ Places to change version number:
 - readme (lesser priority)
 
 reference .gitconfig taglog
+
+Questions:
+- Increment version on develop (or current) branch before checkout to release?
+- Documentation version num is x.x.x, file version is x.x.x.x
+- Pull request in right spot?
+- CI/CD (order doesn't make sense? maybe configure to be part of pull request, or run before building)

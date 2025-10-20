@@ -18,7 +18,20 @@ $glbCompilerPath = "C:\Program Files (x86)\National Instruments\CVI2019\compile.
 
 # ------------------ Main Execution ------------------- #
 
-# 1. Set up release branch
+
+# 1. Check for GitHub CLI, install if necessary
+Write-Host "`n==> Checking that GitHub CLI is installed..." -ForegroundColor Cyan
+gh --version
+
+if ($LASTEXITCODE -ne 0)
+{
+    Write-Host "GitHub CLI not installed. Installing now..." -ForegroundColor Yellow
+    winget install GitHub.cli
+}
+
+
+
+# 2. Set up release branch
 
 # Get current branch
 $targetBranch = git branch --show-current
@@ -75,7 +88,8 @@ if ($LASTEXITCODE -ne 0)
 }
 
 
-# 2. Version info / release notes questionnaire
+
+# 3. Version info / release notes questionnaire
 
 # Get and update version info
 Write-Host "`n==> Checking previous DLL version..." -ForegroundColor Cyan
@@ -162,12 +176,12 @@ $releaseNotes = Get-Content $tempFile | Where-Object { $_ -and ($_ -notmatch '^\
 Remove-Item $tempFile -ErrorAction SilentlyContinue
 
 $formattedNotes = $releaseNotes -join "`n"
-Write-Host "`tRelease notes:`n" -ForegroundColor Green
+Write-Host "Release notes:`n" -ForegroundColor Green
 Write-Host $formattedNotes
 
 
 
-# 3. Compile
+# 4. Compile
 Write-Host "`n==> Compiling project..." -ForegroundColor Cyan
 & $glbCompilerPath $glbPrjFilePath -fileVersion $newVersionNum -log $glbLogFilePath
 $CompileSuccess = Select-String -Path $glbLogFilePath -Pattern "Build succeeded" -Quiet
@@ -187,7 +201,7 @@ else
 
 
 
-# 4. Successful compilation, copy to DLL folder and commit
+# 5. Successful compilation, copy to DLL folder and commit
 Write-Host "`n==> Copying DLL to target folder..." -ForegroundColor Cyan
 Copy-Item -Path $glbBuildFilePath -Destination $glbDLLTargetFolder
 
@@ -198,7 +212,7 @@ git push origin release
 
 
 
-# 5. Run CI/CD, recompile if necessary
+# 6. Run CI/CD, recompile if necessary
 Write-Host "`n==> Running CI/CD tests..." -ForegroundColor Cyan
 
 [bool]$buildOk = $true # 20251015 Michael: use to simulate CI/CD results, delete later and run actual tests
@@ -210,12 +224,21 @@ if ($buildOk -eq $true)
 else
 {
     Write-Host "CI/CD failed." -ForegroundColor Red
+    # CI/CD failed, rebuild DLL and push again
 }
 
 
 
-# 6. Create pull request, end script
+# 7. Create pull request, end script
+# 20251020 Michael: TODO change assignee to Biye later
 Write-Host "`n==> Creating GitHub pull request..." -ForegroundColor Cyan
+
+gh pr create `
+    --head release `
+    --base master `
+    --title "Release v$newVersionNum" `
+    --body "Release notes:`n$releaseNotes" `
+    --assignee "@me" 
 
 git checkout $currentBranch
 Write-Host "`nScript execution complete." -ForegroundColor Green
