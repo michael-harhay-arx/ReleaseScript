@@ -49,7 +49,15 @@ git push origin --tags
 
 
 
-# 4. Change directory to SourceLibraries, commit changes
+# 4. Merge back to develop
+Write-Host "`n==> Merging master branch back into develop..." -ForegroundColor Cyan
+git checkout develop
+git merge master --no-ff
+git push origin develop
+
+
+
+# 5. Change directory to SourceLibraries, commit changes
 Write-Host "`n==> Committing change to SourceLibraries..." -ForegroundColor Cyan
 
 cd ..
@@ -68,7 +76,7 @@ git push origin master
 
 
 
-# 5. End script
+# 6. End script
 git checkout $currentBranch
 Write-Host "`nScript execution complete." -ForegroundColor Green
 Read-Host "Press Enter to exit..."

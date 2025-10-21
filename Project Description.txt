@@ -11,26 +11,23 @@ Features
 6. If successful, copy new DLL to dedicated DLL folder
 7. Make a new commit on release branch with new DLL, add release notes to commit message.
 8. Run CI/CD (if implemented), rebuild DLL if necessary
+9. Create pull request
 
-Create pull request here
+Manually approve pull request
 
 Second part of script
-9. Checkout master branch, merge to master
-10. Tag commit on master with appropriate version number and release notes
-11. Push to master
-12. Change directory to SourceLibraries, make commit message that says "New release for library version x.x.x.x" (Commit since submodule has new commit)
-13. 
+9. Tag commit on master with appropriate version number and release notes
+10. Push to master
+11. Merge master back to develop
+12. Change directory to SourceLibraries, make commit message that says "New release for library version x.x.x.x" (Commit since submodule has new commit) 
 
 Places to change version number:
 - Target settings
 - Git tag
 - Extended documentation (optional)
-- readme (lesser priority)
+- readme (lesser priority, reference .gitconfig taglog)
 
-reference .gitconfig taglog
 
-Questions:
-- Increment version on develop (or current) branch before checkout to release?
-- Documentation version num is x.x.x, file version is x.x.x.x
-- Pull request in right spot?
-- CI/CD (order doesn't make sense? maybe configure to be part of pull request, or run before building)
+Comments:
+- Increment version on develop (or current) branch before checkout to release? Maybe configure CI/CD to be part of pull request, or run before building -> A: simply merge back master
+- Documentation / readme tag updates to be implemented -> see sticky note

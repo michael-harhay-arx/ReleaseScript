@@ -118,7 +118,7 @@ $numParts = $currVersionNum -split ','
 
 while ($versionIncremented -ne $true)
 {
-    $incrementType = Read-Host "`nVersion increment type? [major / minor / build / revision]"
+    $incrementType = Read-Host "`nVersion increment type? [major / minor / build]"
 
     switch ($incrementType.ToLower())
     {
@@ -141,11 +141,6 @@ while ($versionIncremented -ne $true)
         'build' {
             $build++
             $revision = 0
-            $versionIncremented = $true
-        }
-        'revision' 
-        {
-            $revision++
             $versionIncremented = $true
         }
         default 
@@ -183,12 +178,12 @@ Write-Host $formattedNotes
 
 # 4. Compile
 Write-Host "`n==> Compiling project..." -ForegroundColor Cyan
-& $glbCompilerPath $glbPrjFilePath -fileVersion $newVersionNum -log $glbLogFilePath
+& $glbCompilerPath $glbPrjFilePath -release -fileVersion $newVersionNum -log $glbLogFilePath
 $CompileSuccess = Select-String -Path $glbLogFilePath -Pattern "Build succeeded" -Quiet
 
 #$CompileSuccess = $true # 20251015 Michael: use to simulate compilation results, delete later and uncomment actual compilation
 
-if ($CompileSuccess) 
+if ($CompileSuccess)
 {
     Write-Host "Compilation successful." -ForegroundColor Green
 } 
@@ -206,7 +201,7 @@ Write-Host "`n==> Copying DLL to target folder..." -ForegroundColor Cyan
 Copy-Item -Path $glbBuildFilePath -Destination $glbDLLTargetFolder
 
 Write-Host "`n==> Committing to release branch..." -ForegroundColor Cyan
-git add -A
+git add -u
 git commit -m "$formattedNotes"
 git push origin release 
 
