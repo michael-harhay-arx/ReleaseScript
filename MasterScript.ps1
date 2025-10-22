@@ -107,24 +107,30 @@ if ($LASTEXITCODE -ne 0)
 }
 
 
-<#
-# 6. Change directory to SourceLibraries, commit changes
-Write-Host "`n==> Committing change to SourceLibraries..." -ForegroundColor Cyan
 
-cd ..
-cd ..
-$currentDir = Split-Path -Path (Get-Location) -Leaf
-while ($currentDir -ne "SourceLibraries")
+# 6. Commit all submodule changes
+Write-Host "`n==> Committing change to all submodule parents..." -ForegroundColor Cyan
+
+$workingDir = (Get-Location).Path
+
+Do
 {
-    Write-Host "Could not find SourceLibraries." -ForegroundColor Yellow
-    $srcLibPath = Read-Host "Please enter path:"
-}
-cd $srcLibPath
+    $currentDir = (Get-Location).Path
+    $modulesFile = Get-ChildItem -Path $currentDir -Filter .gitmodules -File | Select-Object -First 1 -ExpandProperty FullName
 
-git add $glbLibPathName
-git commit -m "New release for ${glbLibName}: $tagNum"
-git push origin master
-#>
+    # .gitmodules exists, make commit
+    if ($modulesFile.Count -ne 0)
+    {
+        git add $glbLibPathName
+        git commit -m "New release for ${glbLibName}: $tagNum"
+        git push origin master
+    }
+
+    cd ..
+} while ($currentDir -ne "C:\")
+
+cd $workingDir
+
 
 
 # 7. End script
