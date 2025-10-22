@@ -160,19 +160,25 @@ Set-Content $glbPrjFilePath -Value $newContent -Encoding ASCII
 # Get release notes
 Write-Host "`n==> Enter release notes in Notepad. Save and close to continue..." -ForegroundColor Cyan
 
-$tempFile = [System.IO.Path]::GetTempFileName()
-Set-Content $tempFile "# Enter release notes below. Lines starting with # are ignored.`n"
-Start-Process notepad $tempFile -Wait
+$releaseNotesFile = "ReleaseNotes.md"
+if (-not (Test-Path $releaseNotesFile))
+{
+@"
+## Insert summary / title here
+
+- Point1
+- Point2
+- Point3
+"@ | Set-Content $releaseNotesFile -Encoding UTF8
+}
+
+Start-Process notepad $releaseNotesFile -Wait
 
 # Read file contents, ignoring comment lines and blanks
-$releaseNotes = Get-Content $tempFile | Where-Object { $_ -and ($_ -notmatch '^\s*#') }
-
-# Clean up temp file, display release notes
-Remove-Item $tempFile -ErrorAction SilentlyContinue
-
+$releaseNotes = Get-Content $releaseNotesFile | Where-Object { $_.Trim() -ne "" }
 $formattedNotes = $releaseNotes -join "`n"
 Write-Host "Release notes:`n" -ForegroundColor Green
-Write-Host $formattedNotes
+Write-Host $formattedNotes.Replace('## ', '')
 
 
 
@@ -231,8 +237,8 @@ Write-Host "`n==> Creating GitHub pull request..." -ForegroundColor Cyan
 gh pr create `
     --head release `
     --base master `
-    --title "Release v$newVersionNum" `
-    --body "Release notes:`n$releaseNotes" `
+    --title "Release v$newVersionNum".Replace(',', '.') `
+    --body $formattedNotes `
     --assignee "@me" 
 
 git checkout $currentBranch
