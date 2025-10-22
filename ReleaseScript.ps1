@@ -185,13 +185,13 @@ Write-Host $formattedNotes.Replace('## ', '')
 # 5. Update extended documentation in CVI
 $replacementContent = Get-Content $releaseNotesFile -Raw
 
+$date = Get-Date -Format "yyyy/MM/dd"
+$userName = git config --global user.name
+
 $replacementContent = $replacementContent.Replace("* ", "* <li>")
-$replacementContent = $replacementContent.Replace("## ", "* <tr><td>VERSION`n* <td>")
-$matchResult = $replacementContent -match "(\* <td>.*\r)\s+"
-$replacementContent = $replacementContent.Replace("$($matches[0])", "$($matches[1])`n* <td>DATE`n* <td>`n* <ul>`n")
+$replacementContent = [regex]::Replace($replacementContent, "## .*\s+", "* <tr><td>VERSION`n* <td> $userName`n* <td>DATE`n* <td>`n* <ul>`n")
 $replacementContent = $replacementContent + "* </ul>`n* </table>"
 $replacementContent = $replacementContent.Replace("VERSION", "$newVersionNum".Replace(',', '.'))
-$date = Get-Date -Format "yyyy/MM/dd"
 $replacementContent = $replacementContent.Replace("DATE", $date)
 
 # Overwrite documentation file
@@ -224,8 +224,17 @@ else
 Write-Host "`n==> Copying DLL to target folder..." -ForegroundColor Cyan
 Copy-Item -Path $glbBuildFilePath -Destination $glbDLLTargetFolder
 
+if ($LASTEXITCODE -ne 0)
+{
+    Write-Host "Error: could not copy DLL to target folder." -ForegroundColor Red
+    Read-Host "Press Enter to exit..."
+    exit 1
+}
+
+Write-Host "Done." -ForegroundColor Green
+
 Write-Host "`n==> Committing to release branch..." -ForegroundColor Cyan
-git add -u
+git add $glbDLLTargetFolder $glbLogFilePath $releaseNotesFile
 git commit -m "$formattedNotes"
 git push origin release 
 

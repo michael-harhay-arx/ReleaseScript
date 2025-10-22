@@ -33,12 +33,13 @@ if ($LASTEXITCODE -ne 0)
 
 
 # 2. Get version number from project file
+Write-Host "`n==> Getting current version number from release branch..." -ForegroundColor Cyan
 git checkout release
 
 $prjFileContent = Get-Content $glbPrjFilePath -Raw
 if ($prjFileContent -match 'Numeric File Version\s*=\s*"([\d,]+)"') 
 {
-    $versionNum = $Matches[1]
+    $versionNum = $Matches[1].Replace(',', '.')
     Write-Host "Current version: $versionNum"
 } 
 else 
