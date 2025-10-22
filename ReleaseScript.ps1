@@ -12,6 +12,7 @@ $glbBuildFilePath = Get-ChildItem -Path $Root -Filter *.dll -File | Select-Objec
 $glbPrjFilePath = Get-ChildItem -Path $Root -Filter *.prj -File | Select-Object -First 1 -ExpandProperty FullName
 $glbLogFilePath = Join-Path $Root "build_log.txt"
 $glbDLLTargetFolder = Join-Path $Root "DLLs"
+$glbDocFilePath = Get-ChildItem -Filter "*Extended_Documentation.c" -File | Select-Object -First 1 -ExpandProperty FullName
 
 $glbCompilerPath = "C:\Program Files (x86)\National Instruments\CVI2019\compile.exe"
 
@@ -89,9 +90,7 @@ if ($LASTEXITCODE -ne 0)
 
 
 
-# 3. Version info / release notes questionnaire
-
-# Get and update version info
+# 3. Update version info
 Write-Host "`n==> Checking previous DLL version..." -ForegroundColor Cyan
 
 $prjFileContent = Get-Content $glbPrjFilePath -Raw
@@ -157,7 +156,8 @@ $newContent = $prjFileContent -replace 'Numeric File Version\s*=\s*"\d+,\d+,\d+,
 Set-Content $glbPrjFilePath -Value $newContent -Encoding ASCII
 
 
-# Get release notes
+
+# 4. Get release notes
 Write-Host "`n==> Enter release notes in Notepad. Save and close to continue..." -ForegroundColor Cyan
 
 $releaseNotesFile = "ReleaseNotes.md"
@@ -182,12 +182,30 @@ Write-Host $formattedNotes.Replace('## ', '')
 
 
 
-# 4. Compile
+# 5. Update extended documentation in CVI
+$replacementContent = Get-Content $releaseNotesFile -Raw
+
+$replacementContent = $replacementContent.Replace("* ", "* <li>")
+$replacementContent = $replacementContent.Replace("## ", "* <tr><td>VERSION`n* <td>")
+$matchResult = $replacementContent -match "(\* <td>.*\r)\s+"
+$replacementContent = $replacementContent.Replace("$($matches[0])", "$($matches[1])`n* <td>DATE`n* <td>`n* <ul>`n")
+$replacementContent = $replacementContent + "* </ul>`n* </table>"
+$replacementContent = $replacementContent.Replace("VERSION", "$newVersionNum".Replace(',', '.'))
+$date = Get-Date -Format "yyyy/MM/dd"
+$replacementContent = $replacementContent.Replace("DATE", $date)
+
+# Overwrite documentation file
+$docContentOriginal = Get-Content $glbDocFilePath -Raw
+$pattern = "\* </ul>\s*\* </table>"
+$docContentUpdated = [regex]::Replace($docContentOriginal, $pattern, $replacementContent)
+Set-Content -Path $glbDocFilePath -Value $docContentUpdated -Encoding UTF8
+
+
+
+# 6. Compile
 Write-Host "`n==> Compiling project..." -ForegroundColor Cyan
 & $glbCompilerPath $glbPrjFilePath -release -fileVersion $newVersionNum -log $glbLogFilePath
 $CompileSuccess = Select-String -Path $glbLogFilePath -Pattern "Build succeeded" -Quiet
-
-#$CompileSuccess = $true # 20251015 Michael: use to simulate compilation results, delete later and uncomment actual compilation
 
 if ($CompileSuccess)
 {
@@ -202,7 +220,7 @@ else
 
 
 
-# 5. Successful compilation, copy to DLL folder and commit
+# 7. Successful compilation, copy to DLL folder and commit
 Write-Host "`n==> Copying DLL to target folder..." -ForegroundColor Cyan
 Copy-Item -Path $glbBuildFilePath -Destination $glbDLLTargetFolder
 
@@ -213,7 +231,7 @@ git push origin release
 
 
 
-# 6. Run CI/CD, recompile if necessary
+# 8. Run CI/CD, recompile if necessary
 Write-Host "`n==> Running CI/CD tests..." -ForegroundColor Cyan
 
 [bool]$buildOk = $true # 20251015 Michael: use to simulate CI/CD results, delete later and run actual tests
@@ -230,7 +248,7 @@ else
 
 
 
-# 7. Create pull request, end script
+# 9. Create pull request, end script
 # 20251020 Michael: TODO change assignee to Biye later
 Write-Host "`n==> Creating GitHub pull request..." -ForegroundColor Cyan
 
