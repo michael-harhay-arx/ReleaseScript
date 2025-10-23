@@ -119,7 +119,7 @@ Do
     $modulesFile = Get-ChildItem -Path $currentDir -Filter .gitmodules -File | Select-Object -First 1 -ExpandProperty FullName
 
     # .gitmodules exists, make commit
-    if ($modulesFile.Count -ne 0)
+    if ($modulesFile.Count -gt 0)
     {
         git add $glbLibPathName
         git commit -m "New release for ${glbLibName}: $tagNum"

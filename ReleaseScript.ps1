@@ -13,6 +13,7 @@ $glbPrjFilePath = Get-ChildItem -Path $Root -Filter *.prj -File | Select-Object 
 $glbLogFilePath = Join-Path $Root "build_log.txt"
 $glbDLLTargetFolder = Join-Path $Root "DLLs"
 $glbDocFilePath = Get-ChildItem -Filter "*Extended_Documentation.c" -File | Select-Object -First 1 -ExpandProperty FullName
+$glbLibName = Split-Path -Path (Get-Location) -Leaf
 
 $glbCompilerPath = "C:\Program Files (x86)\National Instruments\CVI2019\compile.exe"
 
@@ -164,7 +165,7 @@ $releaseNotesFile = "ReleaseNotes.md"
 if (-not (Test-Path $releaseNotesFile))
 {
 @"
-## Insert summary / title here
+### Insert summary / title here
 
 - Point1
 - Point2
@@ -178,18 +179,19 @@ Start-Process notepad $releaseNotesFile -Wait
 $releaseNotes = Get-Content $releaseNotesFile | Where-Object { $_.Trim() -ne "" }
 $formattedNotes = $releaseNotes -join "`n"
 Write-Host "Release notes:`n" -ForegroundColor Green
-Write-Host $formattedNotes.Replace('## ', '')
+Write-Host $formattedNotes.Replace('### ', '')
 
 
 
 # 5. Update extended documentation in CVI
+Write-Host "`n==> Updating CVI extended documentation..." -ForegroundColor Cyan
 $replacementContent = Get-Content $releaseNotesFile -Raw
 
 $date = Get-Date -Format "yyyy/MM/dd"
 $userName = git config --global user.name
 
 $replacementContent = $replacementContent.Replace("* ", "* <li>")
-$replacementContent = [regex]::Replace($replacementContent, "## .*\s+", "* <tr><td>VERSION`n* <td> $userName`n* <td>DATE`n* <td>`n* <ul>`n")
+$replacementContent = [regex]::Replace($replacementContent, "### .*\s+", "* <tr><td>VERSION`n* <td> $userName`n* <td>DATE`n* <td>`n* <ul>`n")
 $replacementContent = $replacementContent + "* </ul>`n* </table>"
 $replacementContent = $replacementContent.Replace("VERSION", "$newVersionNum".Replace(',', '.'))
 $replacementContent = $replacementContent.Replace("DATE", $date)
@@ -200,9 +202,34 @@ $pattern = "\* </ul>\s*\* </table>"
 $docContentUpdated = [regex]::Replace($docContentOriginal, $pattern, $replacementContent)
 Set-Content -Path $glbDocFilePath -Value $docContentUpdated -Encoding UTF8
 
+Write-Host "Done." -ForegroundColor Green
 
 
-# 6. Compile
+
+# 6. Create Readme Change Log file
+Write-Host "`n==> Updating Readme..." -ForegroundColor Cyan
+$readmeFile = Get-ChildItem -Path $currentDir -Filter Readme.md -File | Select-Object -First 1 -ExpandProperty FullName
+
+# If no Readme exists, create
+if ($modulesFile.Count -eq 0)
+{
+    Write-Host "No Readme found. Creating file..." -ForegroundColor Yellow
+    New-Item -Name "Readme.md" -ItemType File
+    $readmeFile = Get-ChildItem -Path $currentDir -Filter Readme.md -File | Select-Object -First 1 -ExpandProperty FullName
+    Set-Content -Path $readmeFile -Value "# Change Log #" -Encoding UTF8
+}
+
+# Append to change log
+$num = "v" + $newVersionNum.Replace(',', '.')
+$readmeContent = Get-Content $readmeFile -Raw
+$readmeContent += "`n## $glbLibName $num ##`n$formattedNotes"
+Set-Content -Path $readmeFile -Value $readmeContent -Encoding UTF8
+
+Write-Host "Done." -ForegroundColor Green
+
+
+
+# 7. Compile
 Write-Host "`n==> Compiling project..." -ForegroundColor Cyan
 & $glbCompilerPath $glbPrjFilePath -release -fileVersion $newVersionNum -log $glbLogFilePath
 $CompileSuccess = Select-String -Path $glbLogFilePath -Pattern "Build succeeded" -Quiet
@@ -220,7 +247,7 @@ else
 
 
 
-# 7. Successful compilation, copy to DLL folder and commit
+# 8. Successful compilation, copy to DLL folder and commit
 Write-Host "`n==> Copying DLL to target folder..." -ForegroundColor Cyan
 Copy-Item -Path $glbBuildFilePath -Destination $glbDLLTargetFolder
 
@@ -234,13 +261,15 @@ if ($LASTEXITCODE -ne 0)
 Write-Host "Done." -ForegroundColor Green
 
 Write-Host "`n==> Committing to release branch..." -ForegroundColor Cyan
-git add $glbDLLTargetFolder $glbLogFilePath $releaseNotesFile
-git commit -m "$formattedNotes"
+$notes = $formattedNotes.Replace('### ', '').Replace('*', '-')
+
+git add $glbDLLTargetFolder $glbLogFilePath $releaseNotesFile $readmeFile
+git commit -m "$notes"
 git push origin release 
 
 
 
-# 8. Run CI/CD, recompile if necessary
+# 9. Run CI/CD, recompile if necessary
 Write-Host "`n==> Running CI/CD tests..." -ForegroundColor Cyan
 
 [bool]$buildOk = $true # 20251015 Michael: use to simulate CI/CD results, delete later and run actual tests
@@ -257,7 +286,7 @@ else
 
 
 
-# 9. Create pull request, end script
+# 10. Create pull request, end script
 # 20251020 Michael: TODO change assignee to Biye later
 Write-Host "`n==> Creating GitHub pull request..." -ForegroundColor Cyan
 
